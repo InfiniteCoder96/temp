@@ -6,16 +6,26 @@ public class Room {
 	private String category;
 	private String capacity;
 	private Boolean availability;
+	private Double price;
 	
-	public Room(String category, String capacity, Boolean availability) {
+	public Room(String category, String capacity, Boolean availability, Double price) {
 		this.category = category;
 		this.capacity = capacity;
 		this.availability = availability;
+		this.price = price;
 	}
 	
 	public int getId() {
 		return id;
 	}
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
 	public void setId(int id) {
 		this.id = id;
 	}

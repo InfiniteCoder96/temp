@@ -81,7 +81,7 @@ public class BookingDbUtil {
 		}
 	}
 	
-	private void closeConnections(Connection myConn, Statement myStmt1, PreparedStatement myStmt2, ResultSet myRs1,
+	private void closeConnections(Connection myConn, Statement myStmt1, Statement myStmt2, ResultSet myRs1,
 			ResultSet myRs2) {
 
 
@@ -210,4 +210,54 @@ public class BookingDbUtil {
 		}
 		
 	}
+
+	public List<Booking> getAllBookings() {
+		
+		Connection myConn = null;
+		Statement myStmt2 = null;
+		ResultSet myRs = null;
+		
+		List<Booking> all_bookings = new ArrayList<>();
+		
+		try {
+			
+			myConn = dataSource.getConnection();
+			
+			String sql_all_bookings = Helper.GET_ALL_BOOKING_INFO;
+			
+			myStmt2 = myConn.createStatement();
+			
+			myRs = myStmt2.executeQuery(sql_all_bookings);
+			
+			
+			while(myRs.next()) {
+				
+				Booking booking = new Booking();
+				
+				booking.setId(myRs.getInt(1));
+				booking.setRoom_id(myRs.getInt(2));
+				booking.setCustomer_id(myRs.getInt(3));
+				booking.setBook_date(myRs.getDate(4));
+				booking.setCheck_in(myRs.getDate(5));
+				booking.setCheck_out(myRs.getDate(6));
+				
+				all_bookings.add(booking);
+				
+			}
+			
+			return all_bookings;
+			
+		}
+		catch(Exception e) {
+			
+			e.printStackTrace();
+			return null;
+		}
+		finally{
+			closeConnections(myConn,null,myStmt2,null,null);
+		}
+		
+	}
+	
+	
 }

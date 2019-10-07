@@ -38,6 +38,7 @@
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 <!--===============================================================================================-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body class="animsition">
 	<c:if test="${sessionScope.AVAIL_ROOM_IDS == null}">
@@ -47,8 +48,7 @@
 	<header>
 		<!-- Header desktop -->
 		<div class="wrap-menu-header gradient1 trans-0-4">
-			<div class="container h-full">
-				<div class="wrap_header trans-0-3">
+			<div class="wrap_header trans-0-3">
 					<!-- Logo -->
 					
 
@@ -56,33 +56,55 @@
 					<div class="wrap_menu p-l-45 p-l-0-xl">
 						<nav class="menu">
 							<ul class="main_menu">
-								<li>
-									<a href="index.html">Home</a>
-								</li>
-
-								<li>
-									<a href="menu.html">Menu</a>
-								</li>
-
-								<li>
-									<a href="reservation.jsp">Reservation</a>
-								</li>
-
-								<li>
-									<a href="gallery.html">Gallery</a>
-								</li>
-
-								<li>
-									<a href="about.html">About</a>
-								</li>
-
-								<li>
-									<a href="blog.html">Blog</a>
-								</li>
-
-								<li>
-									<a href="contact.html">Contact</a>
-								</li>
+										<li>
+											<a href="index.html">Home</a>
+										</li>
+										<li>
+											<a href="reservation.jsp">Reservation</a>
+										</li>
+		
+										<li>
+											<a href="gallery.html">Gallery</a>
+										</li>
+		
+										<li>
+											<a href="about.html">About</a>
+										</li>
+										<li>
+											<a href="contact.html">Contact</a>
+										</li>
+							<c:choose>
+								<c:when test="${not empty sessionScope.user}">
+									<c:if test="${sessionScope.user eq 'admin'}">
+										<li class="dropdown">
+									        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+									        	<button class=" btn btn-sm  btn-danger"
+														>Hi, ${sessionScope.user}</button><span class="caret"></span>
+									        </a>
+									        <ul class="dropdown-menu">
+									          <li><a href="adminDashboard.jsp">dashboard</a></li>
+									          <li><a href="logout.jsp">logout</a></li>
+									        </ul>
+									     </li>
+									</c:if>
+									<c:if test="${sessionScope.user != 'admin'}">
+										<li class="dropdown">
+									        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+									        	<button class=" btn btn-sm  btn-danger"
+														>Hi, ${sessionScope.user}</button><span class="caret"></span>
+									        </a>
+									        <ul class="dropdown-menu">
+									          <li><a href="logout.jsp">logout</a></li>
+									        </ul>
+									    </li>
+									</c:if>
+								</c:when>
+								<c:otherwise>
+										<li>
+											<a href="login.jsp">Sign In</a>
+										</li>
+								</c:otherwise>
+							</c:choose>
 							</ul>
 						</nav>
 					</div>
@@ -218,6 +240,7 @@
 					
 					
 					<input type="hidden" name="command" value="RESERVE">
+					<input type="hidden" name="amount" value="${RES_DETAILS.get(2) * RES_DETAILS.get(3) * 10000}">
 						<div class="row">
 							<div class="col-md-4">
 								<!-- Date -->
@@ -435,15 +458,107 @@
 									Payment Method
 								</span>
 								<div class="wrap-inputdate pos-relative txt10 size12 bo2 bo-rad-10 m-t-3 m-b-23">
-									<select class="selection-1" name="payment_method" id="payment_method">
+									<select class="selection-1" name="payment_method" id="payment_method" onchange="java_script_:show(this.options[this.selectedIndex].value)">
 										<option>-- Select Payment Type --</option>
-										<option>Credit / Debit Card</option>
-										<option>At Hotel</option>
+										<option value="1">Credit / Debit Card</option>
+										<option value="2">At Hotel</option>
 									</select>
 								</div>
 							</div>
 
 							
+						</div>
+						<div class="row" id="card_details" style="display:none">
+							
+							<div class="row">
+								<div class="col-md-12">
+							<div class="card">
+								  
+								  <div class="card-body">
+								  
+									
+								  
+								  <div class="wrap-btn-booking flex-c-m m-t-6">
+										<!-- Button3 -->
+										<h3>No. of Nights: ${RES_DETAILS.get(2)} </h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										<h3>No. of Rooms: ${RES_DETAILS.get(3)} </h3>
+										
+										
+									</div>
+									<div class="wrap-btn-booking flex-c-m m-t-6" style="margin-top:30px">
+										<!-- Button3 -->
+										<h2>Total due payment: Rs. ${RES_DETAILS.get(2) * RES_DETAILS.get(3) * 10000} /- </h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										
+										
+										
+									</div>
+									<div class="row">
+								<div class="col-md-4">
+									<!-- Date -->
+									<span class="txt9">
+										Accepted Cards
+									</span>
+									<div class="row">
+										<div class="col-md-12">
+											<i class="fa fa-cc-visa" style="color:navy;"></i>
+							              <i class="fa fa-cc-amex" style="color:blue;"></i>
+							              <i class="fa fa-cc-mastercard" style="color:red;"></i>
+							              <i class="fa fa-cc-discover" style="color:orange;"></i>
+										</div>
+										
+									</div>
+									
+								</div>
+							</div>
+								  <div class="row" style="margin-top:50px">
+								    <div class="col-md-6">
+										<span class="txt9">
+											CARD NUMBER
+										</span>
+		
+										<div class="wrap-inputdate pos-relative txt10 size12 bo2 bo-rad-10 m-t-3 m-b-23">
+											<input class=" bo-rad-10 sizefull txt10 p-l-20" type="text" name="cardno" id="cardno">
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="row">
+										<div class="col-md-6">
+											<span class="txt9">
+											EXPIRY MONTH
+											</span>
+			
+											<div class="wrap-inputdate pos-relative txt10 size12 bo2 bo-rad-10 m-t-3 m-b-23">
+												<input class=" bo-rad-10 sizefull txt10 p-l-20" placeholder="MM" type="text" name="expmonth" id="expmonth">
+												
+											</div>
+											</div>
+										<div class="col-md-6">
+											
+											<span class="txt9">
+											EXPIRY YEAR
+											</span>
+											<div class="wrap-inputdate pos-relative txt10 size12 bo2 bo-rad-10 m-t-3 m-b-23">
+												<input class=" bo-rad-10 sizefull txt10 p-l-20" placeholder="YY" type="text" name="expyear" id="expyear">
+												
+											</div>
+										</div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<span class="txt9">
+											CV CODE
+										</span>
+		
+										<div class="wrap-inputdate pos-relative txt10 size12 bo2 bo-rad-10 m-t-3 m-b-23">
+											<input class=" bo-rad-10 sizefull txt10 p-l-20" type="text" name="cvcode" id="cvcode">
+											
+										</div>
+									</div>
+								  </div>
+								  </div>
+								</div>
+							</div>
+							</div>
 						</div>
 						<div class="wrap-btn-booking flex-c-m m-t-6">
 							<!-- Button3 -->
@@ -688,6 +803,25 @@
 		
 		document.getElementById("nights").value = datediff(parseDate(checkIn), parseDate(checkOut));
 	}
+	
+
+	function show(select_item) {
+		
+		var hiddenDiv = document.getElementById("card_details");
+		
+	    if (select_item == "1") {
+		    hiddenDiv.style.visibility='visible';
+			hiddenDiv.style.display='block';
+			Form.fileURL.focus();
+		} 
+		else{
+			hiddenDiv.style.visibility='hidden';
+			hiddenDiv.style.display='none';
+		}
+	}
+	
+	
+	
 	</script>
 
 

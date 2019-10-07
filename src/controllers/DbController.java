@@ -18,6 +18,8 @@ public class DbController {
 	private static String room_table = Helper.TABLE_ROOMS;
 	private static String bookings_table = Helper.TABLE_BOOKINGS;
 	private static String customers_table = Helper.TABLE_CUSTOMERS;
+	private static String users_table = Helper.TABLE_USERS;
+	private static String payments_table = Helper.TABLE_PAYMENTS;
 	
 	/**
 	 * Creates the database connection to the specified database
@@ -97,6 +99,7 @@ public class DbController {
 					+ " category VARCHAR(250),"
 					+ " capacity INT,"
 					+ " availability BOOLEAN DEFAULT true,"
+					+ " price DOUBLE,"
 					+ " primary key (id)"
 					+ ");";
 			
@@ -181,11 +184,92 @@ public class DbController {
 					+ " country VARCHAR(120),"
 					+ " mobile INT,"
 					+ " email VARCHAR(120),"
-					+ " adult_visitors DATE,"
-					+ " child_visitors DATE,"
+					+ " adult_visitors INT,"
+					+ " child_visitors INT,"
 					+ " payment_method VARCHAR(20),"
 					+ " nights INT,"
 					+ " rooms INT,"
+					+ " primary key (id)"
+					+ ");";
+			
+
+			st.executeUpdate(sql);
+			status = true;
+			
+		} catch (SQLException sqe) {
+			System.out.println("Error : While Creating Table (Table Already Exists)");
+			sqe.printStackTrace();
+			status = false;
+		}
+
+		try {
+			con.close();
+		} catch (SQLException se) {
+			System.out.println("Error : While Closing Connection");
+		}
+
+		return status;
+	}
+	
+	/**
+	 * Creates the users table if it doesn't exist in the database
+	 * 
+	 * @return status of type boolean
+	 */
+	public static boolean createUsersTable() {
+
+		boolean status = false;
+		Connection con = DbController.createConnection();
+
+		try {
+			Statement st = con.createStatement();
+			String sql = "CREATE TABLE IF NOT EXISTS " + users_table 
+					+ "("
+					+ "id int NOT NULL AUTO_INCREMENT,"
+					+ " username VARCHAR(250) UNIQUE,"
+					+ " password VARCHAR(250),"
+					+ " email VARCHAR(250),"
+					+ " role VARCHAR(250),"
+					+ " primary key (id)"
+					+ ");";
+			
+
+			st.executeUpdate(sql);
+			status = true;
+			
+		} catch (SQLException sqe) {
+			System.out.println("Error : While Creating Table (Table Already Exists)");
+			sqe.printStackTrace();
+			status = false;
+		}
+
+		try {
+			con.close();
+		} catch (SQLException se) {
+			System.out.println("Error : While Closing Connection");
+		}
+
+		return status;
+	}
+	
+	/**
+	 * Creates the payments table if it doesn't exist in the database
+	 * 
+	 * @return status of type boolean
+	 */
+	public static boolean createPayemntsTable() {
+
+		boolean status = false;
+		Connection con = DbController.createConnection();
+
+		try {
+			Statement st = con.createStatement();
+			String sql = "CREATE TABLE IF NOT EXISTS " + payments_table 
+					+ "("
+					+ "id int NOT NULL AUTO_INCREMENT,"
+					+ " userid INT,"
+					+ " roomid INT,"
+					+ " amount DOUBLE,"
 					+ " primary key (id)"
 					+ ");";
 			

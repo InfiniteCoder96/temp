@@ -19,6 +19,7 @@ import javax.sql.DataSource;
 
 import data.BookingDbUtil;
 import data.CustomerDbUtil;
+import data.PaymentDbUtil;
 import data.RoomDbUtil;
 import models.Booking;
 import models.Customer;
@@ -33,7 +34,7 @@ public class reservation_controller extends HttpServlet {
     private RoomDbUtil roomDbUtil;
     private BookingDbUtil bookingDbUtil;
     private CustomerDbUtil customerDbUtil;
-    private DbController dbController;
+    private PaymentDbUtil paymentDbUtil;
     
     @Resource(name="jdbc/web_HRRS")
     private DataSource dataSource;
@@ -48,6 +49,7 @@ public class reservation_controller extends HttpServlet {
 			roomDbUtil = new RoomDbUtil(dataSource);
 			bookingDbUtil = new BookingDbUtil(dataSource);
 			customerDbUtil = new CustomerDbUtil(dataSource);
+			paymentDbUtil = new PaymentDbUtil(dataSource);
 			
 		}
 		catch(Exception e) {
@@ -73,13 +75,25 @@ public class reservation_controller extends HttpServlet {
 					case "DB_MIGRATE":
 						databaseMigration(request,response);
 						break;
-					
+					case "ALL":
+						getAllBookings(request,response);
+						break;
 				}
 			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void getAllBookings(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		List<Booking> all_bookings = bookingDbUtil.getAllBookings();
+		
+		request.setAttribute("ALL_BOOKINGS", all_bookings);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/adminDashboard.jsp");
+		dispatcher.forward(request, response);
+		
 	}
 
 	private void databaseMigration(HttpServletRequest request, HttpServletResponse response) {
@@ -89,14 +103,16 @@ public class reservation_controller extends HttpServlet {
 			Boolean bookingTable_status = DbController.createBookingsTable();
 			Boolean customerTable_status = DbController.createCustomerTable();
 			Boolean roomsTable_status = DbController.createRoomsTable();
+			Boolean usersTable_status = DbController.createUsersTable();
+			Boolean paymentTable_status = DbController.createPayemntsTable();
 			
-			if(db_status && bookingTable_status && customerTable_status && roomsTable_status) {
+			if(db_status && bookingTable_status && customerTable_status && roomsTable_status && usersTable_status && paymentTable_status) {
 				System.out.println("<======// Database Migrated Successfully //======>");
-				response.sendRedirect("index.html");
+				response.sendRedirect("home.jsp");
 			}
 			else {
 				System.out.println("<======// Error !!! Something went wrong //======>");
-				response.sendRedirect("index.html");
+				response.sendRedirect("home.jsp");
 			}
 		}
 		catch(Exception e) {
@@ -224,9 +240,10 @@ public class reservation_controller extends HttpServlet {
 		
 		Long booked_user = customerDbUtil.insertCustomer(request,session);
 		Boolean booking_status = bookingDbUtil.insertBooking(request, booked_user, available_room_ids);
+		Boolean payment_status = paymentDbUtil.insertPayement(request, booked_user, available_room_ids);
 		Boolean room_update_status = roomDbUtil.updateRoomAvailability("reserve", available_room_ids);
 		
-		if(booking_status && room_update_status) {
+		if(booking_status && room_update_status && payment_status) {
 			request.setAttribute("ROOM_STATUS_SUCCESS", "Thanks, Your booking is successful ! Your Booking ID : ");
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/reservation.jsp");
 			dispatcher.forward(request, response);

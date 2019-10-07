@@ -43,8 +43,7 @@
 	<header>
 		<!-- Header desktop -->
 		<div class="wrap-menu-header gradient1 trans-0-4">
-			<div class="container h-full">
-				<div class="wrap_header trans-0-3">
+			<div class="wrap_header trans-0-3">
 					<!-- Logo -->
 					
 
@@ -52,33 +51,55 @@
 					<div class="wrap_menu p-l-45 p-l-0-xl">
 						<nav class="menu">
 							<ul class="main_menu">
-								<li>
-									<a href="index.html">Home</a>
-								</li>
-
-								<li>
-									<a href="menu.html">Menu</a>
-								</li>
-
-								<li>
-									<a href="reservation.jsp">Reservation</a>
-								</li>
-
-								<li>
-									<a href="gallery.html">Gallery</a>
-								</li>
-
-								<li>
-									<a href="about.html">About</a>
-								</li>
-
-								<li>
-									<a href="blog.html">Blog</a>
-								</li>
-
-								<li>
-									<a href="contact.html">Contact</a>
-								</li>
+										<li>
+											<a href="index.html">Home</a>
+										</li>
+										<li>
+											<a href="reservation.jsp">Reservation</a>
+										</li>
+		
+										<li>
+											<a href="gallery.html">Gallery</a>
+										</li>
+		
+										<li>
+											<a href="about.html">About</a>
+										</li>
+										<li>
+											<a href="contact.html">Contact</a>
+										</li>
+							<c:choose>
+								<c:when test="${not empty sessionScope.user}">
+									<c:if test="${sessionScope.user eq 'admin'}">
+										<li class="dropdown">
+									        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+									        	<button class=" btn btn-sm  btn-danger"
+														>Hi, ${sessionScope.user}</button><span class="caret"></span>
+									        </a>
+									        <ul class="dropdown-menu">
+									          <li><a href="adminDashboard.jsp">dashboard</a></li>
+									          <li><a href="logout.jsp">logout</a></li>
+									        </ul>
+									     </li>
+									</c:if>
+									<c:if test="${sessionScope.user != 'admin'}">
+										<li class="dropdown">
+									        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+									        	<button class=" btn btn-sm  btn-danger"
+														>Hi, ${sessionScope.user}</button><span class="caret"></span>
+									        </a>
+									        <ul class="dropdown-menu">
+									          <li><a href="logout.jsp">logout</a></li>
+									        </ul>
+									    </li>
+									</c:if>
+								</c:when>
+								<c:otherwise>
+										<li>
+											<a href="login.jsp">Sign In</a>
+										</li>
+								</c:otherwise>
+							</c:choose>
 							</ul>
 						</nav>
 					</div>
